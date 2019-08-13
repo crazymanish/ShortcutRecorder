@@ -49,7 +49,7 @@
             case kVK_F18:
             case kVK_F19:
             case kVK_F20:
-./Jumpcut/quickcursor/ShortcutRecorder.framework/Versions/A/Headers/ShortcutRecorder.h                mModifiers = modifiers | NSFunctionKeyMask;
+                mModifiers = modifiers | NSEventModifierFlagFunction;
                 break;
             default:
                 mModifiers = modifiers;
