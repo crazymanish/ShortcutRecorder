@@ -38,7 +38,7 @@ static const CGFloat _SRRecorderControlShapeXRadius = 11.0;
 
 static const CGFloat _SRRecorderControlShapeYRadius = 12.0;
 
-static const CGFloat _SRRecorderControlHeight = 25.0;
+static const CGFloat _SRRecorderControlHeight = 26.0;
 
 static const CGFloat _SRRecorderControlBottomShadowHeightInPixels = 1.0;
 
@@ -47,9 +47,9 @@ static const CGFloat _SRRecorderControlBottomShadowHeightInPixels = 1.0;
 
 // Clear Button Layout Constants
 
-static const CGFloat _SRRecorderControlClearButtonWidth = 14.0;
+static const CGFloat _SRRecorderControlClearButtonWidth = 8.0;
 
-static const CGFloat _SRRecorderControlClearButtonHeight = 14.0;
+static const CGFloat _SRRecorderControlClearButtonHeight = 8.0;
 
 static const CGFloat _SRRecorderControlClearButtonRightOffset = 4.0;
 
@@ -60,9 +60,9 @@ static const NSSize _SRRecorderControlClearButtonSize = {.width = _SRRecorderCon
 
 // SanpBack Button Layout Constants
 
-static const CGFloat _SRRecorderControlSnapBackButtonWidth = 14.0;
+static const CGFloat _SRRecorderControlSnapBackButtonWidth = 10.0;
 
-static const CGFloat _SRRecorderControlSnapBackButtonHeight = 14.0;
+static const CGFloat _SRRecorderControlSnapBackButtonHeight = 10.0;
 
 static const CGFloat _SRRecorderControlSnapBackButtonRightOffset = 1.0;
 
@@ -985,49 +985,74 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
 
     static dispatch_once_t OnceToken;
     dispatch_once(&OnceToken, ^{
-        if (floor(NSAppKitVersionNumber) <= NSAppKitVersionNumber10_9)
-        {
-            _SRImages[0] = SRImage(@"shortcut-recorder-bezel-blue-highlighted-left");
-            _SRImages[1] = SRImage(@"shortcut-recorder-bezel-blue-highlighted-middle");
-            _SRImages[2] = SRImage(@"shortcut-recorder-bezel-blue-highlighted-right");
-            _SRImages[3] = SRImage(@"shortcut-recorder-bezel-editing-left");
-            _SRImages[4] = SRImage(@"shortcut-recorder-bezel-editing-middle");
-            _SRImages[5] = SRImage(@"shortcut-recorder-bezel-editing-right");
-            _SRImages[6] = SRImage(@"shortcut-recorder-bezel-graphite-highlight-mask-left");
-            _SRImages[7] = SRImage(@"shortcut-recorder-bezel-graphite-highlight-mask-middle");
-            _SRImages[8] = SRImage(@"shortcut-recorder-bezel-graphite-highlight-mask-right");
-            _SRImages[9] = SRImage(@"shortcut-recorder-bezel-left");
-            _SRImages[10] = SRImage(@"shortcut-recorder-bezel-middle");
-            _SRImages[11] = SRImage(@"shortcut-recorder-bezel-right");
-            _SRImages[12] = SRImage(@"shortcut-recorder-clear-highlighted");
-            _SRImages[13] = SRImage(@"shortcut-recorder-clear");
-            _SRImages[14] = SRImage(@"shortcut-recorder-snapback-highlighted");
-            _SRImages[15] = SRImage(@"shortcut-recorder-snapback");
-            _SRImages[16] = SRImage(@"shortcut-recorder-bezel-disabled-left");
-            _SRImages[17] = SRImage(@"shortcut-recorder-bezel-disabled-middle");
-            _SRImages[18] = SRImage(@"shortcut-recorder-bezel-disabled-right");
-        }
-        else
-        {
-            _SRImages[0] = SRImage(@"shortcut-recorder-yosemite-bezel-blue-highlighted-left");
-            _SRImages[1] = SRImage(@"shortcut-recorder-yosemite-bezel-blue-highlighted-middle");
-            _SRImages[2] = SRImage(@"shortcut-recorder-yosemite-bezel-blue-highlighted-right");
-            _SRImages[3] = SRImage(@"shortcut-recorder-yosemite-bezel-editing-left");
-            _SRImages[4] = SRImage(@"shortcut-recorder-yosemite-bezel-editing-middle");
-            _SRImages[5] = SRImage(@"shortcut-recorder-yosemite-bezel-editing-right");
-            _SRImages[6] = SRImage(@"shortcut-recorder-yosemite-bezel-graphite-highlight-mask-left");
-            _SRImages[7] = SRImage(@"shortcut-recorder-yosemite-bezel-graphite-highlight-mask-middle");
-            _SRImages[8] = SRImage(@"shortcut-recorder-yosemite-bezel-graphite-highlight-mask-right");
-            _SRImages[9] = SRImage(@"shortcut-recorder-yosemite-bezel-left");
-            _SRImages[10] = SRImage(@"shortcut-recorder-yosemite-bezel-middle");
-            _SRImages[11] = SRImage(@"shortcut-recorder-yosemite-bezel-right");
-            _SRImages[12] = SRImage(@"shortcut-recorder-yosemite-clear-highlighted");
-            _SRImages[13] = SRImage(@"shortcut-recorder-yosemite-clear");
-            _SRImages[14] = SRImage(@"shortcut-recorder-yosemite-snapback-highlighted");
-            _SRImages[15] = SRImage(@"shortcut-recorder-yosemite-snapback");
-            _SRImages[16] = SRImage(@"shortcut-recorder-yosemite-bezel-disabled-left");
-            _SRImages[17] = SRImage(@"shortcut-recorder-yosemite-bezel-disabled-middle");
-            _SRImages[18] = SRImage(@"shortcut-recorder-yosemite-bezel-disabled-right");
+        if (@available(macOS 10.14, *)) {
+            // Mojave, so we must monitor for Dark Mode.
+            NSAppearance *appearance = NSAppearance.currentAppearance;
+            NSAppearanceName basicAppearance = [appearance bestMatchFromAppearancesWithNames:@[
+                                                                                               NSAppearanceNameAqua,
+                                                                                               NSAppearanceNameDarkAqua
+                                                                                               ]];
+            if ([basicAppearance isEqualToString:NSAppearanceNameDarkAqua]) {
+                _SRImages[0] = SRImage(@"sr-mojave-darkaqua-acc-bezel-pressed-left");
+                _SRImages[1] = SRImage(@"sr-mojave-darkaqua-acc-bezel-pressed-center");
+                _SRImages[2] = SRImage(@"sr-mojave-darkaqua-acc-bezel-pressed-right");
+                _SRImages[3] = SRImage(@"sr-mojave-darkaqua-acc-bezel-recording-left");
+                _SRImages[4] = SRImage(@"sr-mojave-darkaqua-acc-bezel-recording-center");
+                _SRImages[5] = SRImage(@"sr-mojave-darkaqua-acc-bezel-recording-right");
+                _SRImages[6] = SRImage(@"sr-mojave-darkaqua-acc-bezel-pressed-left");
+                _SRImages[7] = SRImage(@"sr-mojave-darkaqua-acc-bezel-pressed-center");
+                _SRImages[8] = SRImage(@"sr-mojave-darkaqua-acc-bezel-pressed-right");
+                _SRImages[9] = SRImage(@"sr-mojave-darkaqua-acc-bezel-normal-left");
+                _SRImages[10] = SRImage(@"sr-mojave-darkaqua-acc-bezel-normal-center");
+                _SRImages[11] = SRImage(@"sr-mojave-darkaqua-acc-bezel-normal-right");
+                _SRImages[12] = SRImage(@"sr-mojave-darkaqua-button-clear-pressed");
+                _SRImages[13] = SRImage(@"sr-mojave-darkaqua-button-clear-normal");
+                _SRImages[14] = SRImage(@"sr-mojave-darkaqua-button-cancel-pressed");
+                _SRImages[15] = SRImage(@"sr-mojave-darkaqua-button-cancel-normal");
+                _SRImages[16] = SRImage(@"sr-mojave-darkaqua-bezel-disabled-left");
+                _SRImages[17] = SRImage(@"sr-mojave-darkaqua-bezel-disabled-center");
+                _SRImages[18] = SRImage(@"sr-mojave-darkaqua-bezel-disabled-right");
+            } else {
+                _SRImages[0] = SRImage(@"sr-mojave-aqua-acc-bezel-pressed-left");
+                _SRImages[1] = SRImage(@"sr-mojave-aqua-acc-bezel-pressed-center");
+                _SRImages[2] = SRImage(@"sr-mojave-aqua-acc-bezel-pressed-right");
+                _SRImages[3] = SRImage(@"sr-mojave-aqua-acc-bezel-recording-left");
+                _SRImages[4] = SRImage(@"sr-mojave-aqua-acc-bezel-recording-center");
+                _SRImages[5] = SRImage(@"sr-mojave-aqua-acc-bezel-recording-right");
+                _SRImages[6] = SRImage(@"sr-mojave-aqua-acc-bezel-pressed-left");
+                _SRImages[7] = SRImage(@"sr-mojave-aqua-acc-bezel-pressed-center");
+                _SRImages[8] = SRImage(@"sr-mojave-aqua-acc-bezel-pressed-right");
+                _SRImages[9] = SRImage(@"sr-mojave-aqua-acc-bezel-normal-left");
+                _SRImages[10] = SRImage(@"sr-mojave-aqua-acc-bezel-normal-center");
+                _SRImages[11] = SRImage(@"sr-mojave-aqua-acc-bezel-normal-right");
+                _SRImages[12] = SRImage(@"sr-mojave-aqua-button-clear-pressed");
+                _SRImages[13] = SRImage(@"sr-mojave-aqua-button-clear-normal");
+                _SRImages[14] = SRImage(@"sr-mojave-aqua-button-cancel-pressed");
+                _SRImages[15] = SRImage(@"sr-mojave-aqua-button-cancel-normal");
+                _SRImages[16] = SRImage(@"sr-mojave-aqua-bezel-disabled-left");
+                _SRImages[17] = SRImage(@"sr-mojave-aqua-bezel-disabled-center");
+                _SRImages[18] = SRImage(@"sr-mojave-aqua-bezel-disabled-right");
+            }
+        } else {
+            _SRImages[0] = SRImage(@"sr-yosemite-blue-bezel-pressed-left");
+            _SRImages[1] = SRImage(@"sr-yosemite-blue-bezel-pressed-center");
+            _SRImages[2] = SRImage(@"sr-yosemite-blue-bezel-pressed-right");
+            _SRImages[3] = SRImage(@"sr-yosemite-bezel-recording-left");
+            _SRImages[4] = SRImage(@"sr-yosemite-bezel-recording-center");
+            _SRImages[5] = SRImage(@"sr-yosemite-bezel-recording-right");
+            _SRImages[6] = SRImage(@"sr-yosemite-graphite-bezel-pressed-left");
+            _SRImages[7] = SRImage(@"sr-yosemite-graphite-bezel-pressed-center");
+            _SRImages[8] = SRImage(@"sr-yosemite-graphite-bezel-pressed-right");
+            _SRImages[9] = SRImage(@"sr-yosemite-bezel-normal-left");
+            _SRImages[10] = SRImage(@"sr-yosemite-bezel-normal-center");
+            _SRImages[11] = SRImage(@"sr-yosemite-bezel-normal-right");
+            _SRImages[12] = SRImage(@"sr-yosemite-button-clear-pressed");
+            _SRImages[13] = SRImage(@"sr-yosemite-button-clear-normal");
+            _SRImages[14] = SRImage(@"sr-yosemite-button-cancel-pressed");
+            _SRImages[15] = SRImage(@"sr-yosemite-button-cancel-normal");
+            _SRImages[16] = SRImage(@"sr-yosemite-bezel-disabled-left");
+            _SRImages[17] = SRImage(@"sr-yosemite-bezel-disabled-center");
+            _SRImages[18] = SRImage(@"sr-yosemite-bezel-disabled-right");
         }
     });
 }
