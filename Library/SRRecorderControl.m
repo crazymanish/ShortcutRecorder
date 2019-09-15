@@ -82,6 +82,13 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
     _SRRecorderControlMainButtonTag = 2
 };
 
+// Our singletons work great except if the formatting is changed during use, as by
+// Dark Mode being activated or deactivated while Jumpcut is running. We move the
+// tokens out of the methods in order to allow resetting them.
+static dispatch_once_t OnceTokenNormal = 0;
+static dispatch_once_t OnceTokenRecording = 0;
+static dispatch_once_t OnceTokenDisabled = 0;
+static dispatch_once_t OnceTokenWillDraw = 0;
 
 @implementation SRRecorderControl
 {
@@ -476,9 +483,8 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
 
 - (NSDictionary *)normalLabelAttributes
 {
-    static dispatch_once_t OnceToken;
     static NSDictionary *NormalAttributes = nil;
-    dispatch_once(&OnceToken, ^{
+    dispatch_once(&OnceTokenNormal, ^{
         NSMutableParagraphStyle *p = [[NSMutableParagraphStyle alloc] init];
         p.alignment = NSCenterTextAlignment;
         p.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -494,9 +500,8 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
 
 - (NSDictionary *)recordingLabelAttributes
 {
-    static dispatch_once_t OnceToken;
     static NSDictionary *RecordingAttributes = nil;
-    dispatch_once(&OnceToken, ^{
+    dispatch_once(&OnceTokenRecording, ^{
         NSMutableParagraphStyle *p = [[NSMutableParagraphStyle alloc] init];
         p.alignment = NSCenterTextAlignment;
         p.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -512,9 +517,8 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
 
 - (NSDictionary *)disabledLabelAttributes
 {
-    static dispatch_once_t OnceToken;
     static NSDictionary *DisabledAttributes = nil;
-    dispatch_once(&OnceToken, ^{
+    dispatch_once(&OnceTokenDisabled, ^{
         NSMutableParagraphStyle *p = [[NSMutableParagraphStyle alloc] init];
         p.alignment = NSCenterTextAlignment;
         p.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -527,7 +531,6 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
     });
     return DisabledAttributes;
 }
-
 
 #pragma mark -
 
@@ -983,8 +986,7 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
 {
     [super viewWillDraw];
 
-    static dispatch_once_t OnceToken;
-    dispatch_once(&OnceToken, ^{
+    dispatch_once(&OnceTokenWillDraw, ^{
         if (@available(macOS 10.14, *)) {
             // Mojave, so we must monitor for Dark Mode.
             NSAppearance *appearance = NSAppearance.currentAppearance;
@@ -992,7 +994,8 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
                                                                                                NSAppearanceNameAqua,
                                                                                                NSAppearanceNameDarkAqua
                                                                                                ]];
-            if ([basicAppearance isEqualToString:NSAppearanceNameDarkAqua]) {
+            if ([basicAppearance isEqualToString:NSAppearanceNameDarkAqua])
+            {
                 _SRImages[0] = SRImage(@"sr-mojave-darkaqua-acc-bezel-pressed-left");
                 _SRImages[1] = SRImage(@"sr-mojave-darkaqua-acc-bezel-pressed-center");
                 _SRImages[2] = SRImage(@"sr-mojave-darkaqua-acc-bezel-pressed-right");
@@ -1422,6 +1425,15 @@ typedef NS_ENUM(NSUInteger, _SRRecorderControlButtonTag)
     [super flagsChanged:anEvent];
 }
 
+- (void)viewDidChangeEffectiveAppearance
+{
+    // Reset our singleton tokens
+    OnceTokenNormal = 0;
+    OnceTokenRecording = 0;
+    OnceTokenDisabled = 0;
+    OnceTokenWillDraw= 0;
+    [self setNeedsDisplay:YES];
+}
 
 #pragma mark NSObject
 
